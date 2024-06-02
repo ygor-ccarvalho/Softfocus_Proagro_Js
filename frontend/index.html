@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunicações</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Lista de Comunicações</h1>
+    <button onclick="openModal()">Adicionar Comunicação</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>CPF</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Tipo de Lavoura</th>
+                <th>Data da Colheita</th>
+                <th>Evento Ocorrido</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="modal-container">
+        <div class="modal">
+            <form id="modal-form">
+                <input type="text" id="m-nome" placeholder="Nome" required>
+                <input type="email" id="m-email" placeholder="Email" required>
+                <input type="text" id="m-cpf" placeholder="CPF" required>
+                <input type="number" id="m-latitude" placeholder="Latitude" required>
+                <input type="number" id="m-longitude" placeholder="Longitude" required>
+                <input type="text" id="m-tipo-lavoura" placeholder="Tipo de Lavoura" required>
+                <input type="date" id="m-data-colheita" placeholder="Data da Colheita" required>
+                <input type="text" id="m-evento-ocorrido" placeholder="Evento Ocorrido" required>
+                <button type="submit" id="btnSalvar">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+
+</html>
