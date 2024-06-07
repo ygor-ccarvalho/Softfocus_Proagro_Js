@@ -52,9 +52,7 @@ function openModal(edit = false, index = 0) {
         sCpf.value = '';
         sLatitude.value = '';
         sLongitude.value = '';
-        sTipoLavoura.value = '';
         sDataColheita.value = '';
-        sEventoOcorrido.value = '';
         id = undefined;
     }
 }
@@ -88,10 +86,9 @@ function insertItem(item, index) {
         <td>${item.evento_ocorrido}</td>
         <td class="acao">
             <button onclick="editItem(${index})"><i class='bx bx-edit'></i></button>
-        </td>
-        <td class="acao">
             <button onclick="deleteItem(${index})"><i class='bx bx-trash'></i></button>
         </td>
+        
     `;
     tbody.appendChild(tr);
 }
@@ -99,8 +96,12 @@ function insertItem(item, index) {
 btnSalvar.onclick = async e => {
     e.preventDefault();
 
-    if (sNome.value == '' || sEmail.value == '' || sCpf.value == '' || sLatitude.value == '' || sLongitude.value == '' || sTipoLavoura.value == '' || sDataColheita.value == '' || sEventoOcorrido.value == '') {
-        return;
+    if (sNome.value == '' || sEmail.value == '' || sCpf.value == '' ||  sLatitude.value == '' || sLongitude.value == '' || sDataColheita.value == '' ) {
+        return alert('Existem campos obrigatórios não preenchidos!');
+    } else if (!validaCPF(sCpf.value)) {
+        return alert('CPF inválido!');
+    } else if (!validatelocale(sLatitude.value, sLongitude.value)) {
+        return alert("Latitude ou longitude inválidas!");
     }
 
     const newItem = {
@@ -111,8 +112,11 @@ btnSalvar.onclick = async e => {
         longitude: parseFloat(sLongitude.value),
         tipo_lavoura: sTipoLavoura.value,
         data_colheita: sDataColheita.value,
-        evento_ocorrido: sEventoOcorrido.value
+        evento_ocorrido: sEventoOcorrido.value,
+       
     };
+    
+    vNotify.success({ text: 'Sua comunicação foi salva com sucesso!', title: 'Comunicação registrada!' });
 
     if (id !== undefined) {
         // Edit item
@@ -154,4 +158,84 @@ async function loadItens() {
     itens.forEach((item, index) => {
         insertItem(item, index);
     });
+}
+
+function validaCPF(sCpf) {
+    var Soma = 0
+    var Resto
+
+    var strCPF = String(sCpf).replace(/[^\d]/g, '')
+
+    if (strCPF.length !== 11)
+        return false
+
+    if ([
+        '00000000000',
+        '11111111111',
+        '22222222222',
+        '33333333333',
+        '44444444444',
+        '55555555555',
+        '66666666666',
+        '77777777777',
+        '88888888888',
+        '99999999999',
+    ].indexOf(strCPF) !== -1)
+        return false
+
+    for (i = 1; i <= 9; i++)
+        Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+
+    Resto = (Soma * 10) % 11
+
+    if ((Resto == 10) || (Resto == 11))
+        Resto = 0
+
+    if (Resto != parseInt(strCPF.substring(9, 10)))
+        return false
+
+    Soma = 0
+
+    for (i = 1; i <= 10; i++)
+        Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (12 - i)
+
+    Resto = (Soma * 10) % 11
+
+    if ((Resto == 10) || (Resto == 11))
+        Resto = 0
+
+    if (Resto != parseInt(strCPF.substring(10, 11)))
+        return false
+
+    return true
+}
+
+function convertDMSToDecimal(dms) {
+    const regex = /^-?(\d{1,3})°\s*(\d{1,2})'\s*(\d{1,2}(?:\.\d+)?)"?$/;
+    const match = dms.match(regex);
+
+    if (!match) {
+        return null; // Invalid format
+    }
+
+    const degrees = parseFloat(match[1]);
+    const minutes = parseFloat(match[2]);
+    const seconds = parseFloat(match[3]);
+    const decimal = degrees + (minutes / 60) + (seconds / 3600);
+
+    return dms.startsWith('-') ? -decimal : decimal;
+}
+
+function validatelocale(latitude, longitude) {
+    const lat = parseFloat(latitude) || convertDMSToDecimal(latitude);
+    const lon = parseFloat(longitude) || convertDMSToDecimal(longitude);
+
+    if (lat === null || lon === null) {
+        return false; // Invalid DMS format
+    }
+
+    const latRegex = /^-?([1-8]?[0-9](\.\d+)?|90(\.0+)?)$/;
+    const lonRegex = /^-?((1[0-7][0-9](\.\d+)?)|([1-9]?[0-9](\.\d+)?)|180(\.0+)?)$/;
+
+    return latRegex.test(lat) && lonRegex.test(lon);
 }

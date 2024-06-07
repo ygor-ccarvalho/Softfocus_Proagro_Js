@@ -5,12 +5,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comunicações</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/frontend/src/styles/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="./src/styles/vanilla-notify.css" />
+    
+   
 </head>
 
 <body>
     <h1>Lista de Comunicações</h1>
-    <button onclick="openModal()">Adicionar Comunicação</button>
+
+    
+    <div class="header">
+    
+        <input type="text" placeholder="Pesquisar por CPF" ><i class='bx bx-search'></i>
+
+        <label for="select" >Ordernar por:</label>
+        <select name="select">
+            <option value="nome">Nome</option>
+            <option value="evento-ocorrido" selected>Evento Ocorrido</option>
+            <option value="data-colheita">Data da Colheita</option>
+            <option value="tipo-colheita">Tipo de Colheita</option>
+        </select>
+
+        <button class="add" onclick="openModal()"><i class='bx bx-plus-circle'></i> Adicionar Comunicação</button>
+        
+
+    </div>
+
     <table>
         <thead>
             <tr>
@@ -31,20 +53,48 @@
     <div class="modal-container">
         <div class="modal">
             <form id="modal-form">
+
+                <label for="m-nome">Nome:</label>
                 <input type="text" id="m-nome" placeholder="Nome" required>
+
+                <label for="m-email">Email:</label>
                 <input type="email" id="m-email" placeholder="Email" required>
-                <input type="text" id="m-cpf" placeholder="CPF" required>
-                <input type="number" id="m-latitude" placeholder="Latitude" required>
-                <input type="number" id="m-longitude" placeholder="Longitude" required>
-                <input type="text" id="m-tipo-lavoura" placeholder="Tipo de Lavoura" required>
-                <input type="date" id="m-data-colheita" placeholder="Data da Colheita" required>
-                <input type="text" id="m-evento-ocorrido" placeholder="Evento Ocorrido" required>
+
+                <label for="m-cpf">CPF:</label>
+                <input type="text" id="m-cpf" placeholder="CPF" onkeyup="document.getElementById('validation').innerHTML = validaCPF(this.value)" required>
+
+                <label for="m-latitude">Latitude:</label>
+                <input type="text" id="m-latitude" placeholder="Ex: 40.7128 ou 40°42'46''" required>
+
+                <label for="m-longitude">Longitude:</label>
+                <input type="text" id="m-longitude" placeholder="Ex: -74.0060 ou 74°00'21''" required>
+                
+                <label for="m-tipo-lavoura">Tipo de Lavoura:</label>
+                <select name="select" id="m-tipo-lavoura">
+                    <option value="milho" selected>Milho</option>
+                    <option value="soja" >Soja</option>
+                    <option value="arroz">Arroz</option>
+                    <option value="feijao">Feijão</option>
+                </select>
+
+                <label for="m-data-colheita">Data da Colheita:</label>
+                <input type="date" id="m-data-colheita" placeholder="Data da Colheita">
+
+                <label for="m-evento-ocorrido">Evento Ocorrido:</label>
+                <select name="evento" id="m-evento-ocorrido">
+                    <option value="chuva" selected>Chuva</option>
+                    <option value="geada" >Geada</option>
+                    <option value="granizo">Granizo</option>
+                    <option value="seca">Seca</option>
+                </select>
+
                 <button type="submit" id="btnSalvar">Salvar</button>
             </form>
         </div>
     </div>
-
-    <script src="index.js"></script>
+    <script src="./src/scripts/vanilla-notify.js"></script>
+    <script src="/frontend/src/scripts/index.js"></script>
+    
 </body>
 
 </html>

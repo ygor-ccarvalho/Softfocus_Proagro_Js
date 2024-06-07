@@ -1,4 +1,4 @@
-/* styles.css */
+
 
 body {
     font-family: Arial, sans-serif;
@@ -26,6 +26,12 @@ td {
 
 th {
     background-color: #f2f2f2;
+}
+
+.acao {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .modal-container {
@@ -56,9 +62,35 @@ th {
     flex-direction: column;
 }
 
-.modal form input {
+
+.modal form input, select {
     margin-bottom: 10px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
 }
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 10px;
+    
+}
+.header .bx.bx-search{
+    position: absolute;
+    top: 117px;
+    right: 510px;
+
+}
+
+.add {
+    border-radius: 20px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: white;
+    background-color: black;
+    font-size: 16px;
+   
+}
+
