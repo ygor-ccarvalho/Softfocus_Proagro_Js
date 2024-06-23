@@ -45,7 +45,8 @@ function openModal(edit = false, index = 0) {
         sTipoLavoura.value = itens[index].tipo_lavoura;
         sDataColheita.value = itens[index].data_colheita;
         sEventoOcorrido.value = itens[index].evento_ocorrido;
-        id = itens[index].id; // Use o ID real do item do banco de dados
+        id = itens[index].id; 
+        console.log('Edit mode - ID:', id); 
     } else {
         sNome.value = '';
         sEmail.value = '';
@@ -54,6 +55,7 @@ function openModal(edit = false, index = 0) {
         sLongitude.value = '';
         sDataColheita.value = '';
         id = undefined;
+        console.log('Create mode - ID:', id);
     }
 }
 
@@ -62,13 +64,25 @@ function editItem(index) {
 }
 
 async function deleteItem(index) {
+    const id = itens[index].id;
+    console.log('Delete - ID:', id);
+    if (!id) {
+        console.error('ID está indefinido ou nulo');
+        return;
+    }
     try {
-        await fetch(`http://127.0.0.1:8000/comunicacoes/${itens[index].id}`, {
+        const response = await fetch(`http://127.0.0.1:8000/comunicacoes/${id}`, {
             method: 'DELETE'
         });
+        if (!response.ok) {
+            throw new Error('Erro ao excluir comunicação');
+        }
+        const result = await response.json();
+        alert(result.message);
         loadItens();
     } catch (error) {
-        console.error('There was an error deleting the item:', error);
+        console.error('Erro ao excluir comunicação:', error);
+        alert('Erro ao excluir comunicação');
     }
 }
 
@@ -96,7 +110,7 @@ function insertItem(item, index) {
 btnSalvar.onclick = async e => {
     e.preventDefault();
 
-    if (sNome.value == '' || sEmail.value == '' || sCpf.value == '' ||  sLatitude.value == '' || sLongitude.value == '' || sDataColheita.value == '' ) {
+    if (sNome.value === '' || sEmail.value === '' || sCpf.value === '' || sLatitude.value === '' || sLongitude.value === '' || sDataColheita.value === '') {
         return alert('Existem campos obrigatórios não preenchidos!');
     } else if (!validaCPF(sCpf.value)) {
         return alert('CPF inválido!');
@@ -113,52 +127,75 @@ btnSalvar.onclick = async e => {
         tipo_lavoura: sTipoLavoura.value,
         data_colheita: sDataColheita.value,
         evento_ocorrido: sEventoOcorrido.value,
-       
     };
-    
-    vNotify.success({ text: 'Sua comunicação foi salva com sucesso!', title: 'Comunicação registrada!' });
 
-    if (id !== undefined) {
-        // Edit item
-        try {
-            await fetch(`http://127.0.0.1:8000/comunicacoes/${id}`, {
+    try {
+        if (id !== undefined) {
+            console.log('Edit mode - ID:', id); // Adicione este log para verificar o ID
+            const response = await fetch(`http://127.0.0.1:8000/comunicacoes/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(newItem)
             });
-        } catch (error) {
-            console.error('There was an error updating the item:', error);
-        }
-    } else {
-        // Create new item
-        try {
-            await fetch("http://127.0.0.1:8000/comunicacoes", {
+            if (!response.ok) {
+                throw new Error('Erro ao atualizar comunicação');
+            }
+        } else {
+            console.log('Create mode - ID:', id); // Adicione este log para verificar o ID
+            const response = await fetch("http://127.0.0.1:8000/comunicacoes", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(newItem)
             });
-        } catch (error) {
-            console.error('There was an error creating the item:', error);
+            if (!response.ok) {
+                throw new Error('Erro ao criar comunicação');
+            }
         }
-    }
 
-    modal.classList.remove('active');
-    loadItens();
-    id = undefined;
+        modal.classList.remove('active');
+        loadItens();
+        id = undefined;
+    } catch (error) {
+        console.error('Erro ao salvar comunicação:', error);
+        alert('Erro ao salvar comunicação');
+    }
 };
+
+
+    
 
 async function loadItens() {
     itens = await getComunicacoes();
-    console.log(itens);
     tbody.innerHTML = '';
     itens.forEach((item, index) => {
         insertItem(item, index);
     });
 }
+
+function insertItem(item, index) {
+    let tr = document.createElement('tr');
+
+    tr.innerHTML = `
+        <td>${item.nome}</td>
+        <td>${item.email}</td>
+        <td>${item.cpf}</td>
+        <td>${item.latitude}</td>
+        <td>${item.longitude}</td>
+        <td>${item.tipo_lavoura}</td>
+        <td>${item.data_colheita}</td>
+        <td>${item.evento_ocorrido}</td>
+        <td class="acao">
+            <button onclick="editItem(${index})"><i class='bx bx-edit'></i></button>
+            <button onclick="deleteItem(${index})"><i class='bx bx-trash'></i></button>
+        </td>
+    `;
+    tbody.appendChild(tr);
+}
+
 
 function validaCPF(sCpf) {
     var Soma = 0
@@ -231,11 +268,54 @@ function validatelocale(latitude, longitude) {
     const lon = parseFloat(longitude) || convertDMSToDecimal(longitude);
 
     if (lat === null || lon === null) {
-        return false; // Invalid DMS format
+        return false; 
     }
 
     const latRegex = /^-?([1-8]?[0-9](\.\d+)?|90(\.0+)?)$/;
     const lonRegex = /^-?((1[0-7][0-9](\.\d+)?)|([1-9]?[0-9](\.\d+)?)|180(\.0+)?)$/;
 
     return latRegex.test(lat) && lonRegex.test(lon);
+}
+
+document.getElementById('search-btn').addEventListener('click', async () => {
+    const cpf = document.getElementById('cpf-search').value;
+    if (cpf === '') {
+        alert('Por favor, insira um CPF.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/comunicacoes/${cpf}`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        const data = await response.json();
+        displaySearchResults(data);
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+    }
+});
+
+function displaySearchResults(data) {
+    tbody.innerHTML = ''; // Clear previous results
+    if (data.length === 0) {
+        alert('Nenhuma comunicação encontrada para o CPF fornecido.');
+        return;
+    }
+
+    data.forEach((item, index) => {
+        insertItem(item, index);
+    });
+}
+
+function displaySearchResults(data) {
+    tbody.innerHTML = ''; 
+    if (data.length === 0) {
+        alert('Nenhuma comunicação encontrada para o CPF fornecido.');
+        return;
+    }
+
+    data.forEach((item, index) => {
+        insertItem(item, index);
+    });
 }

@@ -16,9 +16,7 @@
     <h1>Lista de Comunicações</h1>
 
     <div class="header">
-      <input type="text" placeholder="Pesquisar por CPF" /><i
-        class="bx bx-search"
-      ></i>
+      <input id="cpf-search" type="text" placeholder="Pesquisar por CPF" /><button id="search-btn" class="bx bx-search"></button>
 
       <label for="select">Ordernar por:</label>
       <select name="select">
@@ -47,7 +45,7 @@
           <th>Ações</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="comunicacoes-tbody"></tbody>
     </table>
 
     <div class="modal-container">
@@ -69,7 +67,7 @@
               type="text"
               class="form-input" id="m-cpf"
               placeholder="CPF"
-              onkeyup="document.getElementById('validation').innerHTML = validaCPF(this.value)"
+          
               required
             />
           </div>
@@ -97,10 +95,11 @@
           <div class="label-input">
             <label for="m-tipo-lavoura">Tipo de Lavoura:</label>
             <select name="select" class="form-input" id="m-tipo-lavoura">
-              <option value="milho" selected>Milho</option>
-              <option value="soja">Soja</option>
-              <option value="arroz">Arroz</option>
-              <option value="feijao">Feijão</option>
+              <option value="Milho" selected>Milho</option>
+              <option value="Soja">Soja</option>
+              <option value="Trigo">Trigo</option>
+              <option value="Feijao">Feijão</option>
+              <option value="Outro">Outro</option>
             </select>
           </div>
 
@@ -116,10 +115,12 @@
           <div class="label-input">
             <label for="m-evento-ocorrido">Evento Ocorrido:</label>
             <select name="evento" class="form-input" id="m-evento-ocorrido">
-              <option value="chuva" selected>Chuva</option>
-              <option value="geada">Geada</option>
-              <option value="granizo">Granizo</option>
-              <option value="seca">Seca</option>
+              <option value="Chuva Excessiva" selected>Chuva Excessiva</option>
+              <option value="Geada">Geada</option>
+              <option value="Granizo">Granizo</option>
+              <option value="Seca">Seca</option>
+              <option value="Vendaval">Vendaval</option>
+              <option value="Raio">Raio</option>
             </select>
           </div>
           <button type="submit" id="btnSalvar">Salvar</button>
